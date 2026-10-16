@@ -1,0 +1,54 @@
+{
+  "name": "Alhwary AI — مكتب الهواري",
+  "short_name": "Alhwary AI",
+  "description": "مساعد ذكي إسلامي من مكتب الهواري",
+  "start_url": "https://alhwary.wuaze.com/robot/mobile.php",
+  "scope": "https://alhwary.wuaze.com/robot/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1726",
+  "theme_color": "#0b1726",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["education", "lifestyle", "productivity"],
+  "icons": [
+    {
+      "src": "https://alhwary.wuaze.com/robot/avatar.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://alhwary.wuaze.com/robot/avatar.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "الشات",
+      "short_name": "الشات",
+      "url": "https://alhwary.wuaze.com/robot/mobile.php",
+      "icons": [
+        {
+          "src": "https://alhwary.wuaze.com/robot/avatar.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "الروبوت الصوتي",
+      "short_name": "صوتي",
+      "url": "https://alhwary.wuaze.com/robot/mobile-robot.php",
+      "icons": [
+        {
+          "src": "https://alhwary.wuaze.com/robot/avatar.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
