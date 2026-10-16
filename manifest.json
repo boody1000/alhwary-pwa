@@ -4,7 +4,7 @@
   "short_name": "Alhwary AI",
   "description": "مساعد ذكي إسلامي متعدد اللغات من مكتب الهواري — شات ذكي، روبوت ناطق، مكتبة قرآنية",
   "start_url": "https://boody1000.github.io/alhwary-pwa/index.html",
-  "scope": "https://alhwary.wuaze.com/robot/",
+  "scope": "https://boody1000.github.io/alhwary-pwa/index.html",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
