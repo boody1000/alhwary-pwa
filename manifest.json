@@ -1,9 +1,9 @@
 {
-  "id": "https://alhwary.wuaze.com/robot/index.html",
+  "id": "https://boody1000.github.io/alhwary-pwa/index.html",
   "name": "Alhwary AI — مكتب الهواري",
   "short_name": "Alhwary AI",
   "description": "مساعد ذكي إسلامي متعدد اللغات من مكتب الهواري — شات ذكي، روبوت ناطق، مكتبة قرآنية",
-  "start_url": "https://alhwary.wuaze.com/robot/index.html",
+  "start_url": "https://boody1000.github.io/alhwary-pwa/index.html",
   "scope": "https://alhwary.wuaze.com/robot/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
