@@ -2,82 +2,97 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
-<title>Alhwary AI — PWA Files</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b1726">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Alhwary AI">
+<title>Alhwary AI — مكتب الهواري</title>
+
+<!-- ⬇️ أهم سطر: رابط الـ Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<link rel="icon" href="avatar.png">
+<link rel="apple-touch-icon" href="avatar.png">
+
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: #0b1726;
-    color: #f4ead3;
-    margin: 0;
-    padding: 40px 20px;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:#0b1726;
+    color:#f4ead3;
+    font-family:Tahoma,sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    text-align:center;
+    padding:20px;
   }
-  .box {
-    max-width: 500px;
-    text-align: center;
-    background: linear-gradient(135deg, #17314a, #102238);
-    padding: 40px 30px;
-    border-radius: 24px;
-    border: 1px solid rgba(201, 164, 92, 0.3);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  .box{
+    max-width:420px;
+    width:100%;
+    background:linear-gradient(135deg,#17314a,#102238);
+    padding:40px 28px;
+    border-radius:24px;
+    border:1px solid rgba(201,164,92,.3);
+    box-shadow:0 30px 80px rgba(0,0,0,.6);
+    position:relative;
+    overflow:hidden;
   }
-  h1 {
-    color: #c9a45c;
-    font-size: 24px;
-    margin: 0 0 10px;
+  .box::before{
+    content:'';
+    position:absolute;
+    top:0;left:20%;right:20%;
+    height:3px;
+    background:linear-gradient(90deg,transparent,#c9a45c,transparent);
   }
-  p {
-    color: #8ba4bd;
-    font-size: 14px;
-    line-height: 1.8;
-    margin-bottom: 24px;
+  .icon{
+    font-size:72px;
+    margin-bottom:20px;
+    filter:drop-shadow(0 0 20px rgba(201,164,92,.6));
   }
-  a {
-    display: block;
-    background: linear-gradient(135deg, #c9a45c, #e0c27a);
-    color: #0b1726;
-    text-decoration: none;
-    padding: 14px 20px;
-    border-radius: 14px;
-    font-weight: 800;
-    margin-bottom: 10px;
-    transition: all 0.2s;
+  h1{
+    color:#c9a45c;
+    font-size:26px;
+    margin-bottom:12px;
+    font-weight:800;
   }
-  a:hover {
-    transform: scale(1.02);
-    box-shadow: 0 6px 20px rgba(201, 164, 92, 0.4);
+  p{
+    color:#8ba4bd;
+    line-height:1.85;
+    margin-bottom:28px;
+    font-size:15px;
   }
-  a.alt {
-    background: transparent;
-    color: #c9a45c;
-    border: 1px solid rgba(201, 164, 92, 0.4);
-  }
-  .icon {
-    font-size: 64px;
-    margin-bottom: 16px;
-    filter: drop-shadow(0 0 20px rgba(201, 164, 92, 0.5));
+  a{
+    display:block;
+    background:linear-gradient(135deg,#c9a45c,#e0c27a);
+    color:#0b1726;
+    padding:16px;
+    border-radius:14px;
+    text-decoration:none;
+    font-weight:800;
+    font-size:16px;
+    box-shadow:0 6px 20px rgba(201,164,92,.4);
   }
 </style>
 </head>
 <body>
   <div class="box">
     <div class="icon">🕌</div>
-    <h1>Alhwary AI — PWA Files</h1>
-    <p>
-      الملفات المساعدة لتطبيق Alhwary AI<br>
-      PWA Manifest & Service Worker
-    </p>
-
-    <a href="manifest.json">📱 manifest.json</a>
-    <a href="sw.js">⚙️ sw.js</a>
-    <a href="https://alhwary.wuaze.com/robot/mobile.php" class="alt">
-      ← العودة للتطبيق
+    <h1>Alhwary AI</h1>
+    <p>مساعد ذكي إسلامي<br>من مكتب الهواري</p>
+    <a href="https://alhwary.wuaze.com/robot/mobile.php">
+      → افتح Alhwary AI
     </a>
   </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(r => console.log('[PWA] ✅ SW:', r.scope))
+          .catch(e => console.warn('[PWA] ❌ SW:', e.message));
+      });
+    }
+  </script>
 </body>
 </html>
