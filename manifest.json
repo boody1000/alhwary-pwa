@@ -1,10 +1,10 @@
 {
-  "id": "/robot/mobile.php",
+  "id": "/alhwary-pwa/",
   "name": "Alhwary AI — مكتب الهواري",
   "short_name": "Alhwary AI",
   "description": "مساعد ذكي إسلامي من مكتب الهواري",
-  "start_url": "https://alhwary.wuaze.com/robot/mobile.php",
-  "scope": "https://alhwary.wuaze.com/robot/",
+  "start_url": "/alhwary-pwa/",
+  "scope": "/alhwary-pwa/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0b1726",
@@ -15,43 +15,25 @@
   "categories": ["education", "lifestyle", "productivity"],
   "icons": [
     {
-      "src": "https://alhwary.wuaze.com/robot/avatar.png",
+      "src": "avatar.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://alhwary.wuaze.com/robot/avatar.png",
+      "src": "avatar.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "https://alhwary.wuaze.com/robot/avatar.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://alhwary.wuaze.com/robot/avatar.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://alhwary.wuaze.com/robot/avatar.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
     }
   ],
   "screenshots": [
     {
-      "src": "https://alhwary.wuaze.com/robot/avatar.png",
+      "src": "avatar.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Alhwary AI - الشات الذكي"
+      "label": "Alhwary AI"
     }
   ],
   "shortcuts": [
@@ -61,7 +43,7 @@
       "url": "https://alhwary.wuaze.com/robot/mobile.php",
       "icons": [
         {
-          "src": "https://alhwary.wuaze.com/robot/avatar.png",
+          "src": "avatar.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -73,7 +55,7 @@
       "url": "https://alhwary.wuaze.com/robot/mobile-robot.php",
       "icons": [
         {
-          "src": "https://alhwary.wuaze.com/robot/avatar.png",
+          "src": "avatar.png",
           "sizes": "192x192",
           "type": "image/png"
         }
