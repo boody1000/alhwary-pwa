@@ -1,110 +1,47 @@
 {
-  "id": "https://boody1000.github.io/alhwary-pwa/index.html",
+  "id": "/alhwary-pwa/",
   "name": "Alhwary AI — مكتب الهواري",
   "short_name": "Alhwary AI",
-  "description": "مساعد ذكي إسلامي متعدد اللغات من مكتب الهواري — شات ذكي، روبوت ناطق، مكتبة قرآنية",
-  "start_url": "index.html",
-  "scope": "./",
+  "description": "مساعد ذكي إسلامي متعدد اللغات من مكتب الهواري",
+  "start_url": "/alhwary-pwa/",
+  "scope": "/alhwary-pwa/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
-  "background_color": "#0b1726",
-  "theme_color": "#0b1726",
+  "background_color": "#0a1628",
+  "theme_color": "#0a1628",
   "lang": "ar",
   "dir": "rtl",
   "prefer_related_applications": false,
-  "categories": ["education", "lifestyle", "productivity", "books"],
+  "categories": ["education", "lifestyle", "productivity"],
   "icons": [
     {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
+      "src": "avatar.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
+      "src": "avatar.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Alhwary AI — الشات الذكي"
-    },
-    {
-      "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Alhwary AI — الروبوت الصوتي"
     }
   ],
   "shortcuts": [
     {
       "name": "الشات الذكي",
       "short_name": "الشات",
-      "description": "افتح المساعد الذكي",
-      "url": "https://alhwary.wuaze.com/robot/mobile.php",
+      "url": "/alhwary-pwa/",
       "icons": [
-        {
-          "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
+        { "src": "avatar.png", "sizes": "192x192", "type": "image/png" }
       ]
     },
     {
       "name": "الروبوت الصوتي",
       "short_name": "صوتي",
-      "description": "افتح الروبوت الناطق",
-      "url": "https://alhwary.wuaze.com/robot/mobile-robot.php",
+      "url": "/alhwary-pwa/talking-robot.html",
       "icons": [
-        {
-          "src": "https://boody1000.github.io/alhwary-pwa/avatar.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
+        { "src": "avatar.png", "sizes": "192x192", "type": "image/png" }
       ]
     }
   ]
