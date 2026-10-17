@@ -2,7 +2,7 @@
   "id": "/alhwary-pwa/",
   "name": "Alhwary AI — مكتب الهواري",
   "short_name": "Alhwary AI",
-  "description": "مساعد ذكي إسلامي متعدد اللغات من مكتب الهواري",
+  "description": "مساعد ذكي إسلامي متعدد اللغات",
   "start_url": "/alhwary-pwa/",
   "scope": "/alhwary-pwa/",
   "display": "standalone",
@@ -11,38 +11,12 @@
   "theme_color": "#0a1628",
   "lang": "ar",
   "dir": "rtl",
-  "prefer_related_applications": false,
-  "categories": ["education", "lifestyle", "productivity"],
   "icons": [
-    {
-      "src": "avatar.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "avatar.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "avatar.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "avatar.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "shortcuts": [
-    {
-      "name": "الشات الذكي",
-      "short_name": "الشات",
-      "url": "/alhwary-pwa/",
-      "icons": [
-        { "src": "avatar.png", "sizes": "192x192", "type": "image/png" }
-      ]
-    },
-    {
-      "name": "الروبوت الصوتي",
-      "short_name": "صوتي",
-      "url": "/alhwary-pwa/talking-robot.html",
-      "icons": [
-        { "src": "avatar.png", "sizes": "192x192", "type": "image/png" }
-      ]
-    }
+    { "name": "الشات", "url": "/alhwary-pwa/index.html" },
+    { "name": "الروبوت", "url": "/alhwary-pwa/talking-robot.html" }
   ]
 }
