@@ -3,304 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0a1628">
+<meta name="theme-color" content="#0b1726">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="avatar.png">
 <link rel="apple-touch-icon" href="avatar.png">
 <title>الروبوت الناطق — Alhwary AI</title>
 <style>
-:root{
-    --navy-950:#0a1628;
-    --navy-900:#0d1b2e;
-    --navy-800:#132741;
-    --gold:#d4af37;
-    --gold-light:#e6c667;
-    --gold-soft:#f4ead3;
-    --green:#1f5b4b;
-    --green-dark:#16483b;
-    --green-light:#2e8b6d;
-}
+:root{--navy-950:#0b1726;--navy-900:#102238;--navy-800:#17314a;--gold:#c9a45c;--gold-light:#e0c27a;--gold-soft:#f4ead3;--green:#1f5b4b;--green-dark:#16483b;--green-light:#63b99a;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-
-html,body{
-    height:100%;
-    overflow:hidden;
-    overscroll-behavior:none;
-}
-
-body{
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-    color:#fff;
-    background:
-        radial-gradient(circle at 12% 8%, rgba(212,175,55,.14), transparent 28%),
-        radial-gradient(circle at 88% 18%, rgba(31,91,75,.12), transparent 30%),
-        radial-gradient(circle at 50% 90%, rgba(212,175,55,.08), transparent 40%),
-        linear-gradient(135deg, #0a1628 0%, #0d1b2e 50%, #0a1628 100%);
-    position:relative;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:space-between;
-    padding:20px 16px 30px;
-    min-height:100vh;
-    min-height:100dvh;
-}
-body::before{
-    content:'';position:fixed;inset:0;
-    background:
-        radial-gradient(circle at 20% 30%, rgba(212,175,55,.08) 0%, transparent 25%),
-        radial-gradient(circle at 80% 70%, rgba(46,139,109,.06) 0%, transparent 25%);
-    pointer-events:none;z-index:0;
-}
-
-/* ═══ زر الرجوع ═══ */
-.back{
-    position:fixed;
-    top:16px;right:16px;
-    z-index:1000;
-    background:linear-gradient(135deg, rgba(19,39,65,.9), rgba(13,27,46,.9));
-    color:var(--gold-light);
-    text-decoration:none;
-    padding:10px 18px;
-    border-radius:20px;
-    font-size:13px;font-weight:700;
-    backdrop-filter:blur(10px);
-    border:1px solid rgba(212,175,55,.35);
-    box-shadow:0 4px 16px rgba(0,0,0,.3);
-    transition:all .25s;
-}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
+body{margin:0;color:#fff;font-family:'Segoe UI',Tahoma,sans-serif;background:radial-gradient(circle at 12% 8%,rgba(201,164,92,.14),transparent 28%),radial-gradient(circle at 88% 18%,rgba(31,91,75,.12),transparent 30%),linear-gradient(135deg,#0b1726 0%,#102238 50%,#0b1726 100%);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px 16px 30px;min-height:100vh;min-height:100dvh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 20% 30%,rgba(201,164,92,.08) 0%,transparent 25%);pointer-events:none;z-index:0;}
+.back{position:fixed;top:16px;right:16px;z-index:1000;background:linear-gradient(135deg,rgba(23,49,74,.9),rgba(16,34,56,.9));color:var(--gold-light);text-decoration:none;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:700;backdrop-filter:blur(10px);border:1px solid rgba(201,164,92,.35);box-shadow:0 4px 16px rgba(0,0,0,.3);transition:all .25s;}
 .back:active{transform:scale(.95)}
-
-/* ═══ شارة الحالة ═══ */
-.status-badge{
-    position:fixed;
-    top:16px;left:16px;
-    z-index:1000;
-    font-size:11px;font-weight:700;
-    padding:6px 12px;border-radius:14px;
-    background:linear-gradient(135deg, rgba(19,39,65,.9), rgba(13,27,46,.9));
-    color:var(--gold);
-    border:1px solid rgba(212,175,55,.3);
-    backdrop-filter:blur(10px);
-}
-
-/* ═══ الإطار الزخرفي ═══ */
-.frame{
-    position:fixed;
-    inset:12px;
-    border:1px solid rgba(212,175,55,.15);
-    border-radius:22px;
-    pointer-events:none;
-    z-index:1;
-}
-.frame::before,.frame::after{
-    content:'';
-    position:absolute;
-    width:50px;height:50px;
-    border:2px solid rgba(212,175,55,.3);
-}
-.frame::before{
-    top:-2px;right:-2px;
-    border-left:none;border-bottom:none;
-    border-top-right-radius:20px;
-}
-.frame::after{
-    bottom:-2px;left:-2px;
-    border-right:none;border-top:none;
-    border-bottom-left-radius:20px;
-}
-
-/* ═══ زخارف نجمية ═══ */
-.star{
-    position:fixed;
-    color:var(--gold);
-    opacity:.15;
-    font-size:20px;
-    pointer-events:none;
-    z-index:1;
-    animation:fl 4s ease-in-out infinite;
-}
-.star.s1{top:12%;left:8%}
-.star.s2{top:22%;right:10%;animation-delay:1s;font-size:16px}
-.star.s3{bottom:20%;left:12%;animation-delay:2s;font-size:26px}
-.star.s4{bottom:16%;right:14%;animation-delay:1.5s}
-@keyframes fl{
-    0%,100%{transform:translateY(0) rotate(0);opacity:.12}
-    50%{transform:translateY(-10px) rotate(180deg);opacity:.22}
-}
-
-/* ═══ المحتوى الوسطي ═══ */
-.center{
-    flex:1;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    width:100%;
-    position:relative;
-    z-index:10;
-    padding-top:40px;
-}
-
-/* ═══ الأفاتار ═══ */
-.avatar-wrap{
-    position:relative;
-    width:min(62vw,260px);
-    height:min(62vw,260px);
-    animation:breathe 3.2s ease-in-out infinite;
-    margin-bottom:26px;
-}
-@keyframes breathe{
-    0%,100%{transform:scale(1)}
-    50%{transform:scale(1.035)}
-}
+.status-badge{position:fixed;top:16px;left:16px;z-index:1000;font-size:11px;font-weight:700;padding:6px 12px;border-radius:14px;background:linear-gradient(135deg,rgba(23,49,74,.9),rgba(16,34,56,.9));color:var(--gold);border:1px solid rgba(201,164,92,.3);backdrop-filter:blur(10px);}
+.frame{position:fixed;inset:12px;border:1px solid rgba(201,164,92,.15);border-radius:22px;pointer-events:none;z-index:1;}
+.frame::before,.frame::after{content:'';position:absolute;width:50px;height:50px;border:2px solid rgba(201,164,92,.3);}
+.frame::before{top:-2px;right:-2px;border-left:none;border-bottom:none;border-top-right-radius:20px;}
+.frame::after{bottom:-2px;left:-2px;border-right:none;border-top:none;border-bottom-left-radius:20px;}
+.star{position:fixed;color:var(--gold);opacity:.15;font-size:20px;pointer-events:none;z-index:1;animation:fl 4s ease-in-out infinite;}
+.star.s1{top:12%;left:8%}.star.s2{top:22%;right:10%;animation-delay:1s;font-size:16px}.star.s3{bottom:20%;left:12%;animation-delay:2s;font-size:26px}.star.s4{bottom:16%;right:14%;animation-delay:1.5s}
+@keyframes fl{0%,100%{transform:translateY(0) rotate(0);opacity:.12}50%{transform:translateY(-10px) rotate(180deg);opacity:.22}}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;position:relative;z-index:10;padding-top:40px;}
+.avatar-wrap{position:relative;width:min(62vw,260px);height:min(62vw,260px);animation:breathe 3.2s ease-in-out infinite;margin-bottom:26px;}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
 .avatar-wrap.thinking{animation:think 1s ease-in-out infinite}
-@keyframes think{
-    0%,100%{transform:scale(1) rotate(0)}
-    50%{transform:scale(1.08) rotate(3deg)}
-}
-
-.avatar{
-    position:relative;
-    z-index:2;
-    width:100%;height:100%;
-    border-radius:50%;
-    object-fit:cover;
-    display:block;
-    border:4px solid var(--gold);
-    box-shadow:
-        0 0 0 4px rgba(212,175,55,.15),
-        0 0 30px rgba(212,175,55,.35),
-        0 0 60px rgba(31,91,75,.25),
-        0 20px 50px rgba(0,0,0,.5);
-    transition:all .5s ease;
-}
-
-.halo{
-    position:absolute;
-    inset:-10px;
-    border-radius:50%;
-    border:1px solid rgba(212,175,55,.2);
-    z-index:1;
-    pointer-events:none;
-}
-
-.speaking .halo{
-    animation:talkGlow .45s ease-in-out infinite alternate;
-}
-@keyframes talkGlow{
-    0%{box-shadow:0 0 0 2px rgba(255,204,0,.65)}
-    100%{box-shadow:0 0 0 14px rgba(255,204,0,0)}
-}
-.listening .halo{
-    animation:listenGlow 1.5s ease-in-out infinite;
-}
-@keyframes listenGlow{
-    0%,100%{box-shadow:0 0 0 4px rgba(46,204,113,.55)}
-    50%{box-shadow:0 0 0 10px rgba(46,204,113,.18)}
-}
+@keyframes think{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.08) rotate(3deg)}}
+.avatar{position:relative;z-index:2;width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;border:4px solid var(--gold);box-shadow:0 0 0 4px rgba(201,164,92,.15),0 0 30px rgba(201,164,92,.35),0 0 60px rgba(31,91,75,.25),0 20px 50px rgba(0,0,0,.5);transition:all .5s ease;}
+.halo{position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(201,164,92,.2);z-index:1;pointer-events:none;}
+.speaking .halo{animation:talkGlow .45s ease-in-out infinite alternate;}
+@keyframes talkGlow{0%{box-shadow:0 0 0 2px rgba(255,204,0,.65)}100%{box-shadow:0 0 0 14px rgba(255,204,0,0)}}
+.listening .halo{animation:listenGlow 1.5s ease-in-out infinite;}
+@keyframes listenGlow{0%,100%{box-shadow:0 0 0 4px rgba(46,204,113,.55)}50%{box-shadow:0 0 0 10px rgba(46,204,113,.18)}}
 .thinking .avatar{border-color:#ff9800}
-
-.lang-badge{
-    position:absolute;
-    top:-4px;left:-4px;
-    background:linear-gradient(135deg,var(--gold),var(--gold-light));
-    color:var(--navy-950);
-    font-size:11px;font-weight:800;
-    padding:4px 10px;border-radius:12px;
-    box-shadow:
-        0 4px 12px rgba(212,175,55,.4),
-        0 0 0 3px rgba(10,22,40,.7);
-    z-index:5;
-}
-
-/* ═══ فقاعة الرسائل ═══ */
-.bubble{
-    display:none;
-    width:100%;
-    max-width:420px;
-    padding:18px 22px;
-    border-radius:18px;
-    background:linear-gradient(135deg, rgba(19,39,65,.95), rgba(13,27,46,.95));
-    backdrop-filter:blur(15px);
-    color:var(--gold-soft);
-    border:1px solid rgba(212,175,55,.35);
-    border-top:3px solid var(--gold);
-    box-shadow:
-        0 8px 32px rgba(0,0,0,.4),
-        0 0 0 1px rgba(212,175,55,.1),
-        inset 0 1px 0 rgba(255,255,255,.05);
-    font-size:15px;
-    line-height:1.9;
-    text-align:center;
-    font-weight:500;
-    max-height:38vh;
-    overflow-y:auto;
-    position:relative;
-    margin-top:6px;
-}
+.lang-badge{position:absolute;top:-4px;left:-4px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy-950);font-size:11px;font-weight:800;padding:4px 10px;border-radius:12px;box-shadow:0 4px 12px rgba(201,164,92,.4);z-index:5;}
+.bubble{display:none;width:100%;max-width:420px;padding:18px 22px;border-radius:18px;background:linear-gradient(135deg,rgba(23,49,74,.95),rgba(16,34,56,.95));backdrop-filter:blur(15px);color:var(--gold-soft);border:1px solid rgba(201,164,92,.35);border-top:3px solid var(--gold);box-shadow:0 8px 32px rgba(0,0,0,.4);font-size:15px;line-height:1.9;text-align:center;font-weight:500;max-height:38vh;overflow-y:auto;margin-top:6px;}
 .bubble.show{display:block;animation:fi .3s ease-out}
-@keyframes fi{
-    from{opacity:0;transform:translateY(8px)}
-    to{opacity:1;transform:translateY(0)}
-}
-
-/* ═══ أزرار التحكم ═══ */
-.controls{
-    display:flex;
-    gap:14px;
-    align-items:center;
-    justify-content:center;
-    width:100%;
-    max-width:420px;
-    position:relative;
-    z-index:20;
-    padding-bottom:6px;
-}
-
-.ctrl-btn{
-    width:56px;height:56px;
-    border-radius:50%;
-    border:none;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    flex-shrink:0;
-    transition:all .2s;
-    padding:0;
-    backdrop-filter:blur(8px);
-    position:relative;
-    z-index:21;
-}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.controls{display:flex;gap:14px;align-items:center;justify-content:center;width:100%;max-width:420px;position:relative;z-index:20;padding-bottom:6px;}
+.ctrl-btn{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;transition:all .2s;padding:0;backdrop-filter:blur(8px);position:relative;z-index:21;}
 .ctrl-btn:active{transform:scale(.9)}
-
-.ctrl-btn.mic{
-    width:72px;height:72px;
-    font-size:26px;
-    background:linear-gradient(135deg, var(--green), var(--green-dark));
-    color:#fff;
-    border:2px solid var(--green-light);
-    box-shadow:
-        0 6px 24px rgba(31,91,75,.5),
-        inset 0 1px 0 rgba(255,255,255,.15);
-}
-.ctrl-btn.mic.rec{
-    background:linear-gradient(135deg, #f85149, #a02a25);
-    border-color:#fff;
-    animation:recP 1.2s infinite;
-}
-@keyframes recP{
-    0%,100%{box-shadow:0 0 0 0 rgba(248,81,73,.6)}
-    50%{box-shadow:0 0 0 18px rgba(248,81,73,0)}
-}
-
-.ctrl-btn.secondary{
-    background:linear-gradient(135deg, rgba(19,39,65,.9), rgba(13,27,46,.9));
-    color:var(--gold);
-    border:1px solid rgba(212,175,55,.35);
-    box-shadow:0 4px 16px rgba(0,0,0,.3);
-}
-
-/* ═══ Responsive ═══ */
-@media (max-width: 640px){
+.ctrl-btn.mic{width:72px;height:72px;font-size:26px;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border:2px solid var(--green-light);box-shadow:0 6px 24px rgba(31,91,75,.5);}
+.ctrl-btn.mic.rec{background:linear-gradient(135deg,#f85149,#a02a25);border-color:#fff;animation:recP 1.2s infinite;}
+@keyframes recP{0%,100%{box-shadow:0 0 0 0 rgba(248,81,73,.6)}50%{box-shadow:0 0 0 18px rgba(248,81,73,0)}}
+.ctrl-btn.secondary{background:linear-gradient(135deg,rgba(23,49,74,.9),rgba(16,34,56,.9));color:var(--gold);border:1px solid rgba(201,164,92,.35);}
+@media (max-width:640px){
     .back{padding:8px 14px;font-size:12px;}
     .status-badge{font-size:10px;padding:5px 10px;}
     .avatar-wrap{width:min(70vw,240px);height:min(70vw,240px);}
@@ -312,20 +59,15 @@ body::before{
 </head>
 <body>
 
-<!-- ═══ زر الرجوع ═══ -->
 <a class="back" href="index.html">→ الشات</a>
-
-<!-- ═══ شارة الحالة ═══ -->
 <div class="status-badge" id="statusBadge">💤 خامل</div>
 
-<!-- ═══ الإطار والزخارف ═══ -->
 <div class="frame"></div>
 <div class="star s1">✦</div>
 <div class="star s2">✧</div>
 <div class="star s3">✦</div>
 <div class="star s4">✧</div>
 
-<!-- ═══ المحتوى الوسطي ═══ -->
 <div class="center">
     <div class="avatar-wrap" id="avatarWrap">
         <div class="halo"></div>
@@ -335,7 +77,6 @@ body::before{
     <div class="bubble" id="bubble"></div>
 </div>
 
-<!-- ═══ أزرار التحكم ═══ -->
 <div class="controls">
     <button class="ctrl-btn secondary" id="btnTts" title="الصوت">🔊</button>
     <button class="ctrl-btn mic" id="btnMic" title="تكلم">🎤</button>
@@ -343,17 +84,15 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     ⚙️ إعدادات العقل — لازم قبل تحميل robot-engine.js
+     ⚙️ إعدادات العقل — لازم قبل robot-engine.js
      ═══════════════════════════════════════════════════════════════ -->
 <script>
-    /* URLs كاملة للموقع الأصلي */
     window.HAWARY_BACKEND   = 'https://alhwary.wuaze.com/robot';
     window.HAWARY_BRAIN_URL = 'https://alhwary.wuaze.com/robot/firebase-api.php';
     window.HAWARY_WEB_URL   = 'https://alhwary.wuaze.com/robot/web-api.php';
     window.HAWARY_VOICE_URL = 'talking-robot.html';
     window.HAWARY_CHAT_ONLY = false;
 
-    /* Session ID */
     window.HAWARY_SESSION_ID = 'sess_' + (
         localStorage.getItem('hawary_sid') ||
         (function(){
@@ -363,7 +102,6 @@ body::before{
         })()
     );
 
-    /* بيانات المستخدم (لو موجودة) */
     try {
         var _u = JSON.parse(localStorage.getItem('hawary_user') || 'null');
         if (_u) window.HAWARY_USER = _u;
@@ -376,13 +114,12 @@ body::before{
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     🤖 محرك الروبوت
-     ⚠️ مهم جداً: type="module" إجباري
+     🤖 محرك الروبوت — type="module" إجباري!
      ═══════════════════════════════════════════════════════════════ -->
-<script type="module" src="robot-engine.js?v=22.13.2"></script>
+<script type="module" src="robot-engine.js?v=22.14.0"></script>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     🔗 ربط الأزرار بـ HawaryEngine
+     🔗 ربط الأزرار
      ═══════════════════════════════════════════════════════════════ -->
 <script>
 (function() {
@@ -402,11 +139,9 @@ body::before{
         var avatarWrap = document.getElementById('avatarWrap');
         var bubble = document.getElementById('bubble');
 
-        /* ═══ زر المايك ═══ */
         if (btnMic) {
             btnMic.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+                e.preventDefault(); e.stopPropagation();
                 try {
                     if (window.HawaryEngine.listen.isActive()) {
                         window.HawaryEngine.listen.stop();
@@ -417,20 +152,15 @@ body::before{
                         btnMic.classList.add('rec');
                         if (statusBadge) statusBadge.textContent = '🎤 يسمعك';
                     }
-                } catch(err) {
-                    console.warn('[robot-html] mic error:', err);
-                }
+                } catch(err) { console.warn('[robot-html] mic error:', err); }
             });
         }
 
-        /* ═══ زر الصوت ═══ */
         if (btnTts) {
             btnTts.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+                e.preventDefault(); e.stopPropagation();
                 try {
-                    var enabled = window.HawaryEngine.tts.isEnabled();
-                    if (enabled) {
+                    if (window.HawaryEngine.tts.isEnabled()) {
                         window.HawaryEngine.tts.disable();
                         btnTts.textContent = '🔇';
                         btnTts.style.opacity = '0.5';
@@ -439,52 +169,36 @@ body::before{
                         btnTts.textContent = '🔊';
                         btnTts.style.opacity = '1';
                     }
-                } catch(err) {
-                    console.warn('[robot-html] tts error:', err);
-                }
+                } catch(err) {}
             });
         }
 
-        /* ═══ زر الإيقاف ═══ */
         if (btnStop) {
             btnStop.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+                e.preventDefault(); e.stopPropagation();
                 try {
                     window.HawaryEngine.health.fix();
                     if (btnMic) btnMic.classList.remove('rec');
                     if (statusBadge) statusBadge.textContent = '💤 خامل';
-                } catch(err) {
-                    console.warn('[robot-html] stop error:', err);
-                }
+                } catch(err) {}
             });
         }
 
-        /* ═══ ربط أحداث المحرك ═══ */
         window.addEventListener('hawary:user-spoke', function(e) {
-            if (bubble) {
-                bubble.textContent = 'أنت: ' + e.detail.text;
-                bubble.classList.add('show');
-            }
+            if (bubble) { bubble.textContent = 'أنت: ' + e.detail.text; bubble.classList.add('show'); }
             if (statusBadge) statusBadge.textContent = '🧠 يفكر';
             if (avatarWrap) avatarWrap.classList.add('thinking');
         });
 
         window.addEventListener('hawary:bot-replied', function(e) {
-            if (bubble) {
-                bubble.textContent = e.detail.reply;
-                bubble.classList.add('show');
-            }
+            if (bubble) { bubble.textContent = e.detail.reply; bubble.classList.add('show'); }
             if (statusBadge) statusBadge.textContent = '💬 يرد';
             if (avatarWrap) avatarWrap.classList.remove('thinking');
         });
 
         window.addEventListener('hawary:audio-play', function() {
             if (statusBadge) statusBadge.textContent = '🔊 يتكلم';
-            if (avatarWrap) {
-                avatarWrap.classList.add('speaking');
-                avatarWrap.classList.remove('listening');
-            }
+            if (avatarWrap) { avatarWrap.classList.add('speaking'); avatarWrap.classList.remove('listening'); }
         });
 
         window.addEventListener('hawary:audio-ended', function() {
@@ -492,49 +206,29 @@ body::before{
             if (avatarWrap) avatarWrap.classList.remove('speaking');
         });
 
-        /* ═══ إخفاء الروبوت المدمج في الرُكن (عشان ميبقاش فيه 2) ═══ */
         setTimeout(function() {
             var inlineRobot = document.getElementById('hawary-robot-box');
-            if (inlineRobot) {
-                inlineRobot.style.display = 'none';
-                console.log('[robot-html] ✅ Inline robot hidden');
-            }
+            if (inlineRobot) inlineRobot.style.display = 'none';
         }, 500);
 
-        /* ═══ تحديث أولي ═══ */
-        if (langBadge) {
-            langBadge.textContent = window.HawaryEngine.getLang().split('-')[0].toUpperCase();
-        }
-        if (btnTts) {
-            btnTts.textContent = window.HawaryEngine.tts.isEnabled() ? '🔊' : '🔇';
-        }
+        if (langBadge) langBadge.textContent = window.HawaryEngine.getLang().split('-')[0].toUpperCase();
+        if (btnTts) btnTts.textContent = window.HawaryEngine.tts.isEnabled() ? '🔊' : '🔇';
 
-        console.log('[robot-html] ✅ All buttons bound successfully');
-        console.log('[robot-html] Backend:', window.HawaryEngine.backend);
-        console.log('[robot-html] Library size:', window.HawaryEngine.audioLibrary.size());
+        console.log('[robot-html] ✅ Buttons bound, ready');
     }
 
-    /* ابدأ الربط فوراً + عند load كـ احتياط */
     bindButtons();
-    window.addEventListener('load', function() {
-        setTimeout(bindButtons, 500);
-    });
+    window.addEventListener('load', function() { setTimeout(bindButtons, 500); });
 })();
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     ⚙️ Service Worker
-     ═══════════════════════════════════════════════════════════════ -->
+<!-- Service Worker -->
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
         navigator.serviceWorker.register('sw.js')
-            .then(function(r) {
-                console.log('%c[PWA Robot] ✅ SW registered', 'color:#4caf50;font-weight:bold');
-            })
-            .catch(function(e) {
-                console.warn('[PWA Robot] ❌ SW failed:', e.message);
-            });
+            .then(function(r) { console.log('%c[PWA Robot] ✅ SW', 'color:#4caf50;font-weight:bold'); })
+            .catch(function(e) { console.warn('[PWA Robot] ❌ SW:', e.message); });
     });
 }
 </script>
