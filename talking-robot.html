@@ -66,11 +66,7 @@ body::before{
     box-shadow:0 4px 16px rgba(0,0,0,.3);
     transition:all .25s;
 }
-.back:hover{
-    border-color:var(--gold);
-    color:var(--gold);
-    transform:translateY(-1px);
-}
+.back:active{transform:scale(.95)}
 
 .status-badge{
     position:fixed;
@@ -263,6 +259,8 @@ body::before{
     transition:all .2s;
     padding:0;
     backdrop-filter:blur(8px);
+    position:relative;
+    z-index:20;
 }
 .ctrl-btn:active{transform:scale(.9)}
 
@@ -292,28 +290,6 @@ body::before{
     border:1px solid rgba(212,175,55,.35);
     box-shadow:0 4px 16px rgba(0,0,0,.3);
 }
-
-.toast{
-    position:fixed;
-    bottom:110px;
-    left:50%;
-    transform:translateX(-50%) translateY(20px);
-    background:linear-gradient(135deg, rgba(19,39,65,.98), rgba(13,27,46,.98));
-    color:var(--gold);
-    padding:11px 20px;
-    border-radius:14px;
-    font-size:13px;
-    font-weight:700;
-    z-index:9999;
-    border:1px solid rgba(212,175,55,.5);
-    box-shadow:0 8px 30px rgba(0,0,0,.5);
-    white-space:nowrap;
-    pointer-events:none;
-    opacity:0;
-    transition:opacity .3s, transform .3s;
-    backdrop-filter:blur(15px);
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media (max-width: 640px){
     .back{padding:8px 14px;font-size:12px;}
@@ -351,9 +327,6 @@ body::before{
     <button class="ctrl-btn secondary" id="btnStop" title="إيقاف">⏹️</button>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     ⚙️ إعدادات العقل — URLs كاملة للموقع الأصلي
-     ═══════════════════════════════════════════════════════════════ -->
 <script>
     window.HAWARY_BACKEND   = 'https://alhwary.wuaze.com/robot';
     window.HAWARY_BRAIN_URL = 'https://alhwary.wuaze.com/robot/firebase-api.php';
@@ -376,25 +349,128 @@ body::before{
     } catch(e) {
         window.HAWARY_USER = null;
     }
-
-    console.log('[Alhwary Robot] BRAIN_URL:', window.HAWARY_BRAIN_URL);
-    console.log('[Alhwary Robot] VOICE_URL:', window.HAWARY_VOICE_URL);
 </script>
 
-<!-- ═══ روبوت الصوت — يتطلب robot-engine.js على GitHub ═══ -->
-<script src="robot-engine.js?v=22.13.1"></script>
+<script src="robot-engine.js?v=22.13.2"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     🔗 ربط الأزرار بـ HawaryEngine
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+    function bindButtons() {
+        if (!window.HawaryEngine) {
+            setTimeout(bindButtons, 200);
+            return;
+        }
+
+        console.log('[robot-html] Binding buttons...');
+
+        var btnMic = document.getElementById('btnMic');
+        var btnTts = document.getElementById('btnTts');
+        var btnStop = document.getElementById('btnStop');
+        var statusBadge = document.getElementById('statusBadge');
+        var langBadge = document.getElementById('langBadge');
+        var avatarWrap = document.getElementById('avatarWrap');
+        var bubble = document.getElementById('bubble');
+
+        /* ─── زر المايك ─── */
+        if (btnMic) {
+            btnMic.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (window.HawaryEngine.listen.isActive()) {
+                    window.HawaryEngine.listen.stop();
+                    btnMic.classList.remove('rec');
+                    if (statusBadge) statusBadge.textContent = '💤 خامل';
+                } else {
+                    window.HawaryEngine.listen.start();
+                    btnMic.classList.add('rec');
+                    if (statusBadge) statusBadge.textContent = '🎤 يسمعك';
+                }
+            });
+        }
+
+        /* ─── زر الصوت ─── */
+        if (btnTts) {
+            btnTts.addEventListener('click', function(e) {
+                e.preventDefault();
+                var enabled = window.HawaryEngine.tts.isEnabled();
+                if (enabled) {
+                    window.HawaryEngine.tts.disable();
+                    btnTts.textContent = '🔇';
+                    btnTts.style.opacity = '0.5';
+                } else {
+                    window.HawaryEngine.tts.enable();
+                    btnTts.textContent = '🔊';
+                    btnTts.style.opacity = '1';
+                }
+            });
+        }
+
+        /* ─── زر الإيقاف ─── */
+        if (btnStop) {
+            btnStop.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.HawaryEngine.health.fix();
+                if (btnMic) btnMic.classList.remove('rec');
+                if (statusBadge) statusBadge.textContent = '💤 خامل';
+            });
+        }
+
+        /* ─── ربط أحداث المحرك ─── */
+        window.addEventListener('hawary:user-spoke', function(e) {
+            if (bubble) {
+                bubble.textContent = 'أنت: ' + e.detail.text;
+                bubble.classList.add('show');
+            }
+            if (statusBadge) statusBadge.textContent = '🧠 يفكر';
+            if (avatarWrap) avatarWrap.classList.add('thinking');
+        });
+
+        window.addEventListener('hawary:bot-replied', function(e) {
+            if (bubble) {
+                bubble.textContent = e.detail.reply;
+                bubble.classList.add('show');
+            }
+            if (statusBadge) statusBadge.textContent = '💬 يرد';
+            if (avatarWrap) avatarWrap.classList.remove('thinking');
+        });
+
+        window.addEventListener('hawary:audio-play', function() {
+            if (statusBadge) statusBadge.textContent = '🔊 يتكلم';
+            if (avatarWrap) {
+                avatarWrap.classList.add('speaking');
+                avatarWrap.classList.remove('listening');
+            }
+        });
+
+        window.addEventListener('hawary:audio-ended', function() {
+            if (statusBadge) statusBadge.textContent = '💤 خامل';
+            if (avatarWrap) avatarWrap.classList.remove('speaking');
+        });
+
+        /* ─── إخفاء الروبوت المدمج في الرُكن ─── */
+        var inlineRobot = document.getElementById('hawary-robot-box');
+        if (inlineRobot) inlineRobot.style.display = 'none';
+
+        /* ─── تحديث أولي ─── */
+        if (langBadge) langBadge.textContent = window.HawaryEngine.getLang().split('-')[0].toUpperCase();
+        if (btnTts) btnTts.textContent = window.HawaryEngine.tts.isEnabled() ? '🔊' : '🔇';
+
+        console.log('[robot-html] ✅ Buttons bound, ready');
+    }
+
+    bindButtons();
+})();
+</script>
 
 <!-- ═══ Service Worker ═══ -->
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
         navigator.serviceWorker.register('sw.js')
-            .then(function(r) {
-                console.log('%c[PWA Robot] ✅ SW registered', 'color:#4caf50;font-weight:bold');
-            })
-            .catch(function(e) {
-                console.warn('[PWA Robot] ❌ SW failed:', e.message);
-            });
+            .then(function(r) { console.log('[PWA Robot] ✅ SW registered'); })
+            .catch(function(e) { console.warn('[PWA Robot] ❌ SW:', e.message); });
     });
 }
 </script>
