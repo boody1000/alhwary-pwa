@@ -1,16 +1,17 @@
 /**
- * robot-engine.js - روبوت مكتب الهواري (v22.13.1)
+ * robot-engine.js - روبوت مكتب الهواري (v22.13.2)
  * 
- * ✅ FIX v22.13.1:
- *   - إصلاح اسم القارئ: بيستنتج الاسم الصح من URL بدل الـ title
- *   - لو الـ title مش متطابق مع الرابط → بيصلحه تلقائيًا
+ * ✅ FIX v22.13.2:
+ *   - URLs كاملة للموقع الأصلي (InfinityFree)
+ *   - إزالة credentials: same-origin (عشان CORS)
+ *   - دعم GitHub Pages + InfinityFree Backend
  */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {
     getDatabase, ref, get, set, update, push
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-console.log('[robot] v22.13.1 loaded');
+console.log('[robot] v22.13.2 loaded');
 
 const firebaseConfig = {
     apiKey: "AIzaSyCtf2ltWCvw6uW8LqpC2BCXKMoc76KjXVU",
@@ -25,6 +26,11 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const fbdb = getDatabase(fbApp);
 const HW_BASE = new URL('.', import.meta.url).href;
+
+/* ═══════════════════════════════════════════════════════════════
+ * ✅ روابط الـ Backend — كاملة للموقع الأصلي
+ * ═══════════════════════════════════════════════════════════════ */
+const HW_BACKEND = (window.HAWARY_BACKEND || 'https://alhwary.wuaze.com/robot').replace(/\/$/, '');
 
 window.addEventListener('unhandledrejection', function (e) {
     console.warn('[robot] unhandled rejection:', e && e.reason && e.reason.message ? e.reason.message : e.reason);
@@ -147,9 +153,14 @@ function fixSpeechErrors(text, lang) {
 }
 window.hwFixSpeechErrors = fixSpeechErrors;
 
+/* ═══════════════════════════════════════════════════════════════
+ * ✅ BRAIN_CONFIG — URLs كاملة للموقع الأصلي
+ * ═══════════════════════════════════════════════════════════════ */
 const BRAIN_CONFIG = {
-    brainApi: 'firebase-api.php', webApi: 'web-api.php',
-    audioLibraryApi: 'audio-library.php',
+    brainApi: HW_BACKEND + '/firebase-api.php',
+    webApi: HW_BACKEND + '/web-api.php',
+    audioLibraryApi: HW_BACKEND + '/audio-library.php',
+    geminiApi: HW_BACKEND + '/gemini-proxy.php',
     fastTimeout: 10000, webTimeout: 6000, totalTimeout: 13000,
     enabled: true, minCharsForSearch: 2, resultDelay: 200,
     bargeInEnabled: true, bargeInMinChars: 3, bargeInMinWords: 2,
@@ -417,6 +428,9 @@ function detectLangSwitchCommand(text) {
     return null;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+ * ✅ hwQueryEndpoint — بدون credentials + URL كامل
+ * ═══════════════════════════════════════════════════════════════ */
 async function hwQueryEndpoint(question, options, timeoutMs) {
     const ctrl = new AbortController();
     const tid = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -427,9 +441,12 @@ async function hwQueryEndpoint(question, options, timeoutMs) {
             use_firebase: options.use_firebase !== false, use_web: options.use_web !== false,
             use_brain: options.use_brain !== false, combined: !!options.combined
         };
-        const resp = await fetch(HW_BASE + BRAIN_CONFIG.brainApi, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            credentials: 'same-origin', body: JSON.stringify(payload), signal: ctrl.signal
+        /* ✅ fetch لـ URL كامل — بدون credentials */
+        const resp = await fetch(BRAIN_CONFIG.brainApi, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: ctrl.signal
         });
         clearTimeout(tid);
         if (!resp.ok) return null;
@@ -542,9 +559,9 @@ const SITE_MAP = [
     { keywords: ['واتساب', 'whatsapp'], url: 'login.php', selector: '.wa-widget', label: 'أرقام الواتساب' }
 ];
 
-/* ═══════════════════════════════════════════════════════════
- *  مكتبة الصوت - بتتحمل من audio-library.php
- * ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+ *  مكتبة الصوت
+ * ═══════════════════════════════════════════════════════════════ */
 const AUDIO_LIBRARY = [];
 let libraryLoaded = false;
 let libraryLoadPromise = null;
@@ -553,15 +570,15 @@ const AUDIO_PLAY_TRIGGERS = ['شغل', 'شغلي', 'شغللي', 'سمعني', '
 const TEXT_INTENT_KEYWORDS = ['تفسير', 'تفسيرها', 'تفسيره', 'معنى', 'معناها', 'معناه', 'شرح', 'اشرح', 'اشرحلي', 'وضح', 'وضحلي', 'فسر', 'فسرلي', 'ايه', 'إيه', 'ما هو', 'ما هي', 'ما معنى', 'اقرأ', 'اكتب', 'اكتبلي', 'tafsir', 'meaning', 'explain', 'define', 'what is'];
 const LOCATION_TRIGGERS = ['فين', 'وين', 'ازاي اروح', 'دلني على', 'وريني', 'وديني', 'روح بيا', 'خدني', 'عايز اروح', 'where', 'how to go', 'navigate'];
 
+/* ✅ loadAudioLibraryFromServer — URL كامل + بدون credentials */
 async function loadAudioLibraryFromServer() {
     if (libraryLoadPromise) return libraryLoadPromise;
     libraryLoadPromise = (async function () {
         try {
             const ctrl = new AbortController();
             const tid = setTimeout(function () { ctrl.abort(); }, BRAIN_CONFIG.libraryTimeoutMs);
-            const resp = await fetch(HW_BASE + BRAIN_CONFIG.audioLibraryApi, {
+            const resp = await fetch(BRAIN_CONFIG.audioLibraryApi, {
                 method: 'GET',
-                credentials: 'same-origin',
                 cache: 'no-store',
                 signal: ctrl.signal
             });
@@ -628,10 +645,6 @@ function hasTextIntent(text) {
     return false;
 }
 
-/* ═══════════════════════════════════════════════════════════
- * خوارزمية البحث عن العنصر
- * ═══════════════════════════════════════════════════════════ */
-
 let _cachedSurahNames = null;
 let _cachedReciterNames = null;
 
@@ -683,7 +696,6 @@ function _resetLibraryCache() {
     _cachedReciterNames = null;
 }
 
-/* ✅ FIX v22.13.1: خريطة slug → اسم القارئ الحقيقي */
 const SLUG_TO_RECITER = {
     'afs': 'مشاري العفاسي',
     'rmsd': 'عبد الرحمن مسعد',
@@ -711,7 +723,6 @@ const SLUG_TO_RECITER = {
     'jaber': 'علي جابر'
 };
 
-/* ✅ تصحيح العنوان: يضمن إن الاسم في title متطابق مع الـ URL */
 function _fixItemTitle(item) {
     const url = item.url || (item.urls && item.urls[0]) || '';
     const m = url.match(/mp3quran\.net\/([^\/]+)\//i);
@@ -914,7 +925,7 @@ function showPermissionGate(onDone, onTap) {
         '<div class="hw-avatar-wrap">',
         '<div class="hw-halo"></div>',
         '<div id="hawary-lang-badge">' + currentLang + '</div>',
-        '<img class="hw-avatar-img" src="' + HW_BASE + 'avatar.jpg" alt="robot">',
+        '<img class="hw-avatar-img" src="' + HW_BASE + 'avatar.png" alt="robot">',
         '</div>'
     ].join('');
     document.body.appendChild(container);
@@ -1442,11 +1453,8 @@ function showPermissionGate(onDone, onTap) {
         container.classList.remove('speaking');
     }
 
-    /* ✅ FIX v22.13.1: بيستخدم العنوان المصحح */
     function playLibraryItem(item, said) {
         const urls = (item.urls || [item.url]).filter(Boolean).map(function (u) { return new URL(u, HW_BASE).href; });
-
-        // ✅ استخدم العنوان المصحح
         const fixedTitle = _fixItemTitle(item);
         const msg = 'تمام يا فندم، هشغل ' + fixedTitle + '.';
 
@@ -1998,8 +2006,9 @@ function showPermissionGate(onDone, onTap) {
             const geminiCtrl = new AbortController();
             const geminiTid = setTimeout(function () { geminiCtrl.abort(); }, 8000);
 
-            const res = await fetch(HW_BASE + 'gemini-proxy.php', {
-                method: 'POST', credentials: 'same-origin',
+            /* ✅ fetch لـ URL كامل — بدون credentials */
+            const res = await fetch(BRAIN_CONFIG.geminiApi, {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     question: q, context: page, visitorName: hwGetVisitorName(),
@@ -2200,7 +2209,8 @@ function showPermissionGate(onDone, onTap) {
     boot();
 
     window.HawaryEngine = {
-        version: '22.13.1',
+        version: '22.13.2',
+        backend: HW_BACKEND,
         brain: {
             enabled: true, query: hwQueryBrain, queryWeb: hwQueryWebIndex,
             queryEndpoint: hwQueryEndpoint,
@@ -2223,7 +2233,8 @@ function showPermissionGate(onDone, onTap) {
         health: {
             check: function () {
                 return {
-                    version: '22.13.1', listening: listening,
+                    version: '22.13.2', backend: HW_BACKEND,
+                    listening: listening,
                     audioLibraryCount: AUDIO_LIBRARY.length,
                     libraryLoaded: libraryLoaded
                 };
@@ -2259,6 +2270,8 @@ function showPermissionGate(onDone, onTap) {
         }
     };
 
-    console.log('[robot] v22.13.1 loaded, audio library: ' + AUDIO_LIBRARY.length + ' items');
+    console.log('[robot] v22.13.2 loaded');
+    console.log('[robot] Backend: ' + HW_BACKEND);
+    console.log('[robot] Audio library: ' + AUDIO_LIBRARY.length + ' items');
 
 })();
