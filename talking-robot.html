@@ -51,6 +51,7 @@ body::before{
     pointer-events:none;z-index:0;
 }
 
+/* ═══ زر الرجوع ═══ */
 .back{
     position:fixed;
     top:16px;right:16px;
@@ -68,6 +69,7 @@ body::before{
 }
 .back:active{transform:scale(.95)}
 
+/* ═══ شارة الحالة ═══ */
 .status-badge{
     position:fixed;
     top:16px;left:16px;
@@ -80,6 +82,7 @@ body::before{
     backdrop-filter:blur(10px);
 }
 
+/* ═══ الإطار الزخرفي ═══ */
 .frame{
     position:fixed;
     inset:12px;
@@ -105,6 +108,7 @@ body::before{
     border-bottom-left-radius:20px;
 }
 
+/* ═══ زخارف نجمية ═══ */
 .star{
     position:fixed;
     color:var(--gold);
@@ -123,6 +127,7 @@ body::before{
     50%{transform:translateY(-10px) rotate(180deg);opacity:.22}
 }
 
+/* ═══ المحتوى الوسطي ═══ */
 .center{
     flex:1;
     display:flex;flex-direction:column;
@@ -133,6 +138,7 @@ body::before{
     padding-top:40px;
 }
 
+/* ═══ الأفاتار ═══ */
 .avatar-wrap{
     position:relative;
     width:min(62vw,260px);
@@ -204,6 +210,7 @@ body::before{
     z-index:5;
 }
 
+/* ═══ فقاعة الرسائل ═══ */
 .bubble{
     display:none;
     width:100%;
@@ -234,6 +241,7 @@ body::before{
     to{opacity:1;transform:translateY(0)}
 }
 
+/* ═══ أزرار التحكم ═══ */
 .controls{
     display:flex;
     gap:14px;
@@ -242,7 +250,7 @@ body::before{
     width:100%;
     max-width:420px;
     position:relative;
-    z-index:10;
+    z-index:20;
     padding-bottom:6px;
 }
 
@@ -260,7 +268,7 @@ body::before{
     padding:0;
     backdrop-filter:blur(8px);
     position:relative;
-    z-index:20;
+    z-index:21;
 }
 .ctrl-btn:active{transform:scale(.9)}
 
@@ -291,6 +299,7 @@ body::before{
     box-shadow:0 4px 16px rgba(0,0,0,.3);
 }
 
+/* ═══ Responsive ═══ */
 @media (max-width: 640px){
     .back{padding:8px 14px;font-size:12px;}
     .status-badge{font-size:10px;padding:5px 10px;}
@@ -303,15 +312,20 @@ body::before{
 </head>
 <body>
 
+<!-- ═══ زر الرجوع ═══ -->
 <a class="back" href="index.html">→ الشات</a>
+
+<!-- ═══ شارة الحالة ═══ -->
 <div class="status-badge" id="statusBadge">💤 خامل</div>
 
+<!-- ═══ الإطار والزخارف ═══ -->
 <div class="frame"></div>
 <div class="star s1">✦</div>
 <div class="star s2">✧</div>
 <div class="star s3">✦</div>
 <div class="star s4">✧</div>
 
+<!-- ═══ المحتوى الوسطي ═══ -->
 <div class="center">
     <div class="avatar-wrap" id="avatarWrap">
         <div class="halo"></div>
@@ -321,19 +335,25 @@ body::before{
     <div class="bubble" id="bubble"></div>
 </div>
 
+<!-- ═══ أزرار التحكم ═══ -->
 <div class="controls">
     <button class="ctrl-btn secondary" id="btnTts" title="الصوت">🔊</button>
     <button class="ctrl-btn mic" id="btnMic" title="تكلم">🎤</button>
     <button class="ctrl-btn secondary" id="btnStop" title="إيقاف">⏹️</button>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     ⚙️ إعدادات العقل — لازم قبل تحميل robot-engine.js
+     ═══════════════════════════════════════════════════════════════ -->
 <script>
+    /* URLs كاملة للموقع الأصلي */
     window.HAWARY_BACKEND   = 'https://alhwary.wuaze.com/robot';
     window.HAWARY_BRAIN_URL = 'https://alhwary.wuaze.com/robot/firebase-api.php';
     window.HAWARY_WEB_URL   = 'https://alhwary.wuaze.com/robot/web-api.php';
     window.HAWARY_VOICE_URL = 'talking-robot.html';
     window.HAWARY_CHAT_ONLY = false;
 
+    /* Session ID */
     window.HAWARY_SESSION_ID = 'sess_' + (
         localStorage.getItem('hawary_sid') ||
         (function(){
@@ -343,15 +363,23 @@ body::before{
         })()
     );
 
+    /* بيانات المستخدم (لو موجودة) */
     try {
         var _u = JSON.parse(localStorage.getItem('hawary_user') || 'null');
         if (_u) window.HAWARY_USER = _u;
     } catch(e) {
         window.HAWARY_USER = null;
     }
+
+    console.log('[talking-robot] BACKEND:', window.HAWARY_BACKEND);
+    console.log('[talking-robot] BRAIN_URL:', window.HAWARY_BRAIN_URL);
 </script>
 
-<script src="robot-engine.js?v=22.13.2"></script>
+<!-- ═══════════════════════════════════════════════════════════════
+     🤖 محرك الروبوت
+     ⚠️ مهم جداً: type="module" إجباري
+     ═══════════════════════════════════════════════════════════════ -->
+<script type="module" src="robot-engine.js?v=22.13.2"></script>
 
 <!-- ═══════════════════════════════════════════════════════════════
      🔗 ربط الأزرار بـ HawaryEngine
@@ -364,7 +392,7 @@ body::before{
             return;
         }
 
-        console.log('[robot-html] Binding buttons...');
+        console.log('[robot-html] ✅ HawaryEngine found, binding buttons...');
 
         var btnMic = document.getElementById('btnMic');
         var btnTts = document.getElementById('btnTts');
@@ -374,50 +402,65 @@ body::before{
         var avatarWrap = document.getElementById('avatarWrap');
         var bubble = document.getElementById('bubble');
 
-        /* ─── زر المايك ─── */
+        /* ═══ زر المايك ═══ */
         if (btnMic) {
             btnMic.addEventListener('click', function(e) {
                 e.preventDefault();
-                if (window.HawaryEngine.listen.isActive()) {
-                    window.HawaryEngine.listen.stop();
-                    btnMic.classList.remove('rec');
-                    if (statusBadge) statusBadge.textContent = '💤 خامل';
-                } else {
-                    window.HawaryEngine.listen.start();
-                    btnMic.classList.add('rec');
-                    if (statusBadge) statusBadge.textContent = '🎤 يسمعك';
+                e.stopPropagation();
+                try {
+                    if (window.HawaryEngine.listen.isActive()) {
+                        window.HawaryEngine.listen.stop();
+                        btnMic.classList.remove('rec');
+                        if (statusBadge) statusBadge.textContent = '💤 خامل';
+                    } else {
+                        window.HawaryEngine.listen.start();
+                        btnMic.classList.add('rec');
+                        if (statusBadge) statusBadge.textContent = '🎤 يسمعك';
+                    }
+                } catch(err) {
+                    console.warn('[robot-html] mic error:', err);
                 }
             });
         }
 
-        /* ─── زر الصوت ─── */
+        /* ═══ زر الصوت ═══ */
         if (btnTts) {
             btnTts.addEventListener('click', function(e) {
                 e.preventDefault();
-                var enabled = window.HawaryEngine.tts.isEnabled();
-                if (enabled) {
-                    window.HawaryEngine.tts.disable();
-                    btnTts.textContent = '🔇';
-                    btnTts.style.opacity = '0.5';
-                } else {
-                    window.HawaryEngine.tts.enable();
-                    btnTts.textContent = '🔊';
-                    btnTts.style.opacity = '1';
+                e.stopPropagation();
+                try {
+                    var enabled = window.HawaryEngine.tts.isEnabled();
+                    if (enabled) {
+                        window.HawaryEngine.tts.disable();
+                        btnTts.textContent = '🔇';
+                        btnTts.style.opacity = '0.5';
+                    } else {
+                        window.HawaryEngine.tts.enable();
+                        btnTts.textContent = '🔊';
+                        btnTts.style.opacity = '1';
+                    }
+                } catch(err) {
+                    console.warn('[robot-html] tts error:', err);
                 }
             });
         }
 
-        /* ─── زر الإيقاف ─── */
+        /* ═══ زر الإيقاف ═══ */
         if (btnStop) {
             btnStop.addEventListener('click', function(e) {
                 e.preventDefault();
-                window.HawaryEngine.health.fix();
-                if (btnMic) btnMic.classList.remove('rec');
-                if (statusBadge) statusBadge.textContent = '💤 خامل';
+                e.stopPropagation();
+                try {
+                    window.HawaryEngine.health.fix();
+                    if (btnMic) btnMic.classList.remove('rec');
+                    if (statusBadge) statusBadge.textContent = '💤 خامل';
+                } catch(err) {
+                    console.warn('[robot-html] stop error:', err);
+                }
             });
         }
 
-        /* ─── ربط أحداث المحرك ─── */
+        /* ═══ ربط أحداث المحرك ═══ */
         window.addEventListener('hawary:user-spoke', function(e) {
             if (bubble) {
                 bubble.textContent = 'أنت: ' + e.detail.text;
@@ -449,28 +492,49 @@ body::before{
             if (avatarWrap) avatarWrap.classList.remove('speaking');
         });
 
-        /* ─── إخفاء الروبوت المدمج في الرُكن ─── */
-        var inlineRobot = document.getElementById('hawary-robot-box');
-        if (inlineRobot) inlineRobot.style.display = 'none';
+        /* ═══ إخفاء الروبوت المدمج في الرُكن (عشان ميبقاش فيه 2) ═══ */
+        setTimeout(function() {
+            var inlineRobot = document.getElementById('hawary-robot-box');
+            if (inlineRobot) {
+                inlineRobot.style.display = 'none';
+                console.log('[robot-html] ✅ Inline robot hidden');
+            }
+        }, 500);
 
-        /* ─── تحديث أولي ─── */
-        if (langBadge) langBadge.textContent = window.HawaryEngine.getLang().split('-')[0].toUpperCase();
-        if (btnTts) btnTts.textContent = window.HawaryEngine.tts.isEnabled() ? '🔊' : '🔇';
+        /* ═══ تحديث أولي ═══ */
+        if (langBadge) {
+            langBadge.textContent = window.HawaryEngine.getLang().split('-')[0].toUpperCase();
+        }
+        if (btnTts) {
+            btnTts.textContent = window.HawaryEngine.tts.isEnabled() ? '🔊' : '🔇';
+        }
 
-        console.log('[robot-html] ✅ Buttons bound, ready');
+        console.log('[robot-html] ✅ All buttons bound successfully');
+        console.log('[robot-html] Backend:', window.HawaryEngine.backend);
+        console.log('[robot-html] Library size:', window.HawaryEngine.audioLibrary.size());
     }
 
+    /* ابدأ الربط فوراً + عند load كـ احتياط */
     bindButtons();
+    window.addEventListener('load', function() {
+        setTimeout(bindButtons, 500);
+    });
 })();
 </script>
 
-<!-- ═══ Service Worker ═══ -->
+<!-- ═══════════════════════════════════════════════════════════════
+     ⚙️ Service Worker
+     ═══════════════════════════════════════════════════════════════ -->
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
         navigator.serviceWorker.register('sw.js')
-            .then(function(r) { console.log('[PWA Robot] ✅ SW registered'); })
-            .catch(function(e) { console.warn('[PWA Robot] ❌ SW:', e.message); });
+            .then(function(r) {
+                console.log('%c[PWA Robot] ✅ SW registered', 'color:#4caf50;font-weight:bold');
+            })
+            .catch(function(e) {
+                console.warn('[PWA Robot] ❌ SW failed:', e.message);
+            });
     });
 }
 </script>
