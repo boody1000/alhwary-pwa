@@ -1,11 +1,12 @@
 /* ==========================================================
- * hawary-handler.js v32.0 — AI-First + Server-Side Conversation
+ * hawary-handler.js v34.0 — AI-First + Smart Backend Detection
  * ==========================================================
- *  🆕 v32.0:
- *     ✅ حذف الردود الجاهزة المحلية
- *     ✅ AI يدير كل الحوار (البوح، المشاعر، الأسئلة)
- *     ✅ إرسال تاريخ المحادثة للسيرفر
- *     ✅ استقبال emotion/state/depth وتمريرها
+ *  🆕 v34.0:
+ *     ✅ اكتشاف تلقائي للـ Backend (GitHub ↔ InfinityFree)
+ *     ✅ CORS mode صريح + credentials: omit
+ *     ✅ إزالة same-origin (كان بيكسر cross-domain)
+ *     ✅ رسائل خطأ واضحة (CORS/Network/Timeout)
+ *     ✅ AI يدير كل الحوار
  *     ✅ مشاركة session مع robot-engine.js
  * ========================================================== */
 (function () {
@@ -24,6 +25,30 @@
 
     const SCRIPT_BASE = detectScriptBase();
     console.log('[Hawary] المسار:', SCRIPT_BASE);
+
+    /* ═══════════════════════════════════════════════════════════
+     * ✅ v34.0: كشف تلقائي للـ Backend
+     * ═══════════════════════════════════════════════════════════ */
+    const INFINITY_HOSTS = /(infinityfreeapp\.com|rf\.gd|epizy\.com|wuaze\.com|infinityfree\.com)$/i;
+    const BACKEND_HOST  = 'https://alhwary.wuaze.com/robot'; // ← بدّل لدومينك
+
+    function detectBackend() {
+        if (window.HAWARY_BACKEND) {
+            const b = String(window.HAWARY_BACKEND).replace(/\/$/, '');
+            console.log('[Hawary] Backend (يدوي):', b);
+            return b;
+        }
+        const host = window.location.hostname || '';
+        if (INFINITY_HOSTS.test(host)) {
+            const b = window.location.origin + '/robot';
+            console.log('[Hawary] Backend (InfinityFree - same origin):', b);
+            return b;
+        }
+        console.log('[Hawary] Backend (cross-domain → InfinityFree):', BACKEND_HOST);
+        return BACKEND_HOST;
+    }
+
+    const HW_BACKEND = detectBackend();
 
     /* ═══ الثيم ═══ */
     (function injectHawaryTheme() {
@@ -130,12 +155,17 @@
     }
     function stopThinkingRotation() { if (thinkingRotator) { clearInterval(thinkingRotator); thinkingRotator = null; } }
 
+    /* ═══════════════════════════════════════════════════════════
+     * ✅ CFG — v34.0
+     * ═══════════════════════════════════════════════════════════ */
     const CFG = {
-        apiUrl: SCRIPT_BASE + 'firebase-api.php',
+        apiUrl: HW_BACKEND + '/firebase-api.php',
         apiTimeout: 65000,
         maxFileKB: 200,
         maxBubbles: 200,
     };
+
+    console.log('[Hawary] 🔗 API URL:', CFG.apiUrl);
 
     /* ═══ Session مشترك مع robot-engine.js ═══ */
     function getSessionId() {
@@ -156,7 +186,7 @@
         }
     }
 
-    /* ═══ History محلية (تُرسل للسيرفر لتعزيز السياق) ═══ */
+    /* ═══ History محلية ═══ */
     function getLocalHistory() {
         try {
             const raw = localStorage.getItem('hawary_history');
@@ -275,6 +305,9 @@
         bubble.appendChild(line);
     }
 
+    /* ═══════════════════════════════════════════════════════════
+     * ✅ v34.0: callBrain — CORS mode + credentials: omit
+     * ═══════════════════════════════════════════════════════════ */
     async function callBrain(payload, timeout) {
         timeout = timeout || CFG.apiTimeout;
         const ctrl = new AbortController();
@@ -282,16 +315,23 @@
         try {
             const resp = await fetch(CFG.apiUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                mode: 'cors',
+                credentials: 'omit',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify(payload),
-                signal: ctrl.signal,
-                credentials: 'same-origin',
+                signal: ctrl.signal
             });
             clearTimeout(tid);
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             const text = await resp.text();
             try { return JSON.parse(text); }
-            catch (e) { throw new Error('bad_json'); }
+            catch (e) {
+                console.error('[Hawary] bad JSON. أول 200 حرف:', text.slice(0, 200));
+                throw new Error('bad_json');
+            }
         } catch (e) {
             clearTimeout(tid);
             throw e;
@@ -305,7 +345,7 @@
     }
 
     /* ═══════════════════════════════════════════════════════════
-     * askBrain — v32.0: كل حاجة عبر AI
+     * askBrain
      * ═══════════════════════════════════════════════════════════ */
     async function askBrain(question, extraContext) {
         const q = (question || '').trim();
@@ -316,7 +356,7 @@
         addBubble(q || '(ملف مرفق)', 'user');
         pushLocalHistory('user', q);
 
-        /* 1) تحية/شكر سريع (بدون API) */
+        /* 1) تحية/شكر سريع */
         const fastReply = !extraContext ? detectFastReply(q) : null;
         if (fastReply) {
             setTimeout(() => {
@@ -329,7 +369,7 @@
             return;
         }
 
-        /* 2) كل حاجة تانية → API */
+        /* 2) API */
         const thinking = addBubble(humanThinking(), 'bot', { thinking: true });
         startThinkingRotation(thinking);
 
@@ -340,14 +380,18 @@
                 session: state.sessionId,
                 user_id: state.sessionId,
                 lang: fullLang(),
-                history: getLocalHistory(), // 🆕 نرسل السياق المحلي
+                history: getLocalHistory(),
             };
 
-            console.log('[Hawary v32] 📡 →firebase-api.php:', q.substring(0, 80));
+            console.log('[Hawary v34.0] 📡 →', CFG.apiUrl, '| Q:', q.substring(0, 80));
 
             let result = null;
+            let connErr = null;
             try { result = await callBrain(payload, CFG.apiTimeout); }
-            catch (e) { console.warn('[Hawary] ❌ فشل الاتصال:', e.message); }
+            catch (e) {
+                connErr = e;
+                console.warn('[Hawary] ❌ فشل الاتصال:', e.message, e);
+            }
 
             stopThinkingRotation();
             thinking.classList.remove('thinking');
@@ -361,7 +405,6 @@
                 handleAudioTags(thinking, answer);
                 if (result.emotion) addEmotionBadge(thinking, result.emotion);
 
-                /* meta */
                 if (result.engine) {
                     const meta = document.createElement('div');
                     meta.style.cssText = 'font-size:11px;opacity:.55;margin-top:8px;color:#c9a45c;';
@@ -398,8 +441,31 @@
                 pushLocalHistory('assistant', answer);
                 scrollBottom(true);
 
+            } else if (connErr) {
+                /* ═══ مشكلة اتصال / CORS ═══ */
+                console.error('[Hawary] 🚨 Network/CORS error:', connErr);
+                let msg = 'معلش، حصلت مشكلة في الاتصال. جرّب تاني.';
+                const em = String(connErr.message || '');
+                if (em.includes('Failed to fetch') || em.includes('NetworkError')) {
+                    msg = '⚠️ مش قادر أوصل للسيرفر.\n\n' +
+                          'الأسباب المحتملة:\n' +
+                          '• CORS — السيرفر مش بيسمح للدومين ده\n' +
+                          '• السيرفر واقف مؤقتًا\n' +
+                          '• عندك AdBlock/Extension بيمنع الطلب\n\n' +
+                          'افتح الـ Console (F12) لتفاصيل أكتر.';
+                } else if (em.includes('aborted') || em.includes('AbortError')) {
+                    msg = '⏱️ السيرفر أخد وقت طويل. جرّب تاني.';
+                } else if (em.startsWith('HTTP')) {
+                    msg = '⚠️ السيرفر رد بخطأ: ' + em + '\n\nجرّب تاني بعد شوية.';
+                } else if (em === 'bad_json') {
+                    msg = '⚠️ السيرفر رد برد غير صالح.\n\nممكن يكون:\n• Service Worker بيخزّن رد قديم\n• PHP fatal error\n\nامسح الكاش وجرّب تاني.';
+                }
+                thinking.innerHTML = escB(msg);
+                addRetryButton(thinking, q);
+                scrollBottom(true);
+
             } else {
-                /* فشل */
+                /* ═══ رد من السيرفر بس مش ok ═══ */
                 console.warn('[Hawary] ⛔ لا يوجد رد:', result);
                 let msg = 'معلش، مش لاقي رد دلوقتي. جرّب تاني.';
                 if (result && result.error === 'minute_limit') {
@@ -408,6 +474,8 @@
                     msg = 'وصلت الحد اليومي، جرب تاني بكرة.';
                 } else if (result && result.error === 'no_answer') {
                     msg = result.answer || 'معلش، محتاج توضيح أكتر.';
+                } else if (result && result.error) {
+                    msg = 'معلش، حصلت مشكلة: ' + result.error;
                 }
                 thinking.innerHTML = escB(msg);
                 addRetryButton(thinking, q);
@@ -417,9 +485,10 @@
         } catch (err) {
             stopThinkingRotation();
             thinking.classList.remove('thinking');
-            thinking.innerHTML = escB('معلش، حصلت مشكلة في الاتصال. جرّب تاني.');
+            console.error('[Hawary] fatal:', err);
+            thinking.innerHTML = escB('معلش، حصلت مشكلة غير متوقعة. جرّب تاني.');
+            addRetryButton(thinking, q);
             scrollBottom(true);
-            console.error('[Hawary]', err);
         } finally {
             state.busy = false; setInputDisabled(false);
             if (els.input) els.input.focus();
@@ -498,10 +567,24 @@
 
     setupVoiceInput();
 
-    /* اختبار الاتصال */
+    /* ═══════════════════════════════════════════════════════════
+     * ✅ v34.0: اختبار الاتصال — مع تشخيص واضح
+     * ═══════════════════════════════════════════════════════════ */
     (async function testApi() {
+        const pingUrl = CFG.apiUrl + '?action=ping';
+        console.log('[Hawary] 🧪 اختبار الاتصال:', pingUrl);
         try {
-            const r = await fetch(CFG.apiUrl + '?action=ping', { method: 'GET' });
+            const r = await fetch(pingUrl, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit',
+                cache: 'no-store'
+            });
+            console.log('[Hawary] 📥 رد السيرفر:', r.status, r.statusText);
+            if (!r.ok) {
+                console.error('[Hawary] ❌ السيرفر رد ' + r.status + ' على ' + pingUrl);
+                return;
+            }
             const j = await r.json();
             if (j && j.ok) {
                 console.info(
@@ -513,15 +596,23 @@
                 console.warn('[Hawary] ⚠️ رد غريب:', j);
             }
         } catch (e) {
-            console.warn('[Hawary] ⚠️ API مش شغال:', e.message);
+            console.error(
+                '%c❌ API مش شغال — ' + e.message +
+                '\n   URL: ' + pingUrl +
+                '\n   الأسباب المحتملة:' +
+                '\n   1) CORS — الـ PHP مش بيسمح بالدومين ده' +
+                '\n   2) Service Worker بيعمل cache للرد القديم' +
+                '\n   3) InfinityFree JS Challenge' +
+                '\n   4) AdBlock/Extension بيمنع الطلب',
+                'color:#d93025;font-weight:bold;'
+            );
         }
     })();
 
-    /* الاستماع لحدث رد الروبوت الصوتي لمزامنة الشات */
+    /* استماع لحدث رد الروبوت الصوتي */
     window.addEventListener('hawary:bot-replied', (e) => {
         const d = e.detail || {};
         if (!d.reply) return;
-        /* لو الرد جاء من robot-engine.js → نضيفه في الشات */
         const lastBot = els.chatBox.querySelector('.chat-bot:last-child .chat-bubble');
         if (lastBot && lastBot.textContent.includes(d.reply.slice(0, 30))) return;
         const b = addBubble(d.reply, 'bot');
@@ -536,8 +627,13 @@
         newChat: () => els.newChatBtn && els.newChatBtn.click(),
         sessionId: () => state.sessionId,
         apiUrl: CFG.apiUrl,
-        version: '32.0-ai-first',
+        backend: HW_BACKEND,
+        version: '34.0-smart-backend',
         getHistory: getLocalHistory,
         clearHistory: clearLocalHistory,
     };
+
+    console.log('%c[Hawary Handler] v34.0 ready', 'color:#c9a45c;font-weight:bold');
+    console.log('[Hawary] Backend:', HW_BACKEND);
+    console.log('[Hawary] API:', CFG.apiUrl);
 })();
